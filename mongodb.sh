@@ -29,10 +29,10 @@ VALIDATE(){
 }
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo
-VALIDATE $? "copying mongodb.repo"
+VALIDATE $? "copying mongo.repo"
 
 dnf install mongodb-org -y &>>$LOGS_FILE
-VALIDATE $? "installing mongodb server"
+VALIDATE $? "installing mongo server"
 
 systemctl enable mongod &>>$LOGS_FILE
 VALIDATE $? "enabling mongodb"
