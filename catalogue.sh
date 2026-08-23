@@ -37,8 +37,15 @@ VALIDATE $? "enabling nodejs:20 module"
 dnf install nodejs -y &>>$LOGS_FILE
 VALIDATE $? "installing nodejs"
 
-useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-VALIDATE $? "creating roboshop system user"
+id roboshop
+if [ $? -ne 0 ]
+then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
+    VALIDATE $? "creating roboshop system user"
+else
+    echo -e "roboshop user is $Y already present nothing to do $N"
+fi
+
 
 mkdir -p /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
@@ -46,6 +53,7 @@ VALIDATE $? "creating app directory"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
 VALIDATE $? "downloading catalogue zip file"
 
+rm -rf /app/* &>>$LOGS_FILE
 cd /app
 unzip /tmp/catalogue.zip &>>$LOGS_FILE
 VALIDATE $? "unzipping catalogue zip file"
@@ -64,3 +72,14 @@ VALIDATE $? "starting catalogue service"
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "installing mongodb client"
+STATUS=$( mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+)
+if [ $STATUS -lt 0]
+then
+    mongosh --host mongodb.satishdevops.shop </app/db/master-data.js &>>$LOGS_FILE
+    VALIDATE $? "loading data into Mongodb"
+else
+    echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
+fi
+#mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue(db name)")'
+#out put is 1 it means db is exists, other wise not
