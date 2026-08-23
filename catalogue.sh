@@ -64,5 +64,3 @@ VALIDATE $? "starting catalogue service"
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "installing mongodb client"
-
-mongosh --host mongodb.satishdevops.shop </app/db/master-data.js &>>$LOGS_FILE
