@@ -59,3 +59,4 @@ VALIDATE $? "copying nginx.conf file"
 
 systemctl restart nginx &>>$LOGS_FILE
 VALIDATE $? "restarting nginx service"
+# satish marchant
