@@ -8,7 +8,7 @@ N="\e[0m"
 LOGS_FOLDER="/var/log/roboshop-logs"
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOGS_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-SCRIPT_DIR=$PWD # script directory where the script is running from
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd) # script directory where the script is running from
 mkdir -p $LOGS_FOLDER
 echo "script statrted excuted at : $(date)" | tee -a $LOGS_FILE
 if [ $USERID -ne 0 ]
@@ -44,7 +44,7 @@ VALIDATE $? "starting nginx service"
 rm -rf /usr/share/nginx/html/* &>>$LOGS_FILE
 VALIDATE $? "removing default nginx content"
 
-curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
+curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip &>>$LOGS_FILE
 VALIDATE $? "downloading frontend zip file"
 
 cd /usr/share/nginx/html 
