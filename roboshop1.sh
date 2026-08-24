@@ -9,7 +9,7 @@ DOMAIN_NAME="satishdevops.shop"
 
 
 #for instance in ${INSTANCES[@]} # for test aws ec2 run-instances --image-id ami-0220d79f3f480ecf5 --instance-type t2.micro --security-group-ids sg-051bd3051b24472e6 --tag-specifications "ResourceType=instance,Tags=[{Key=Name, Value=test}]"
-for instancce in $@
+for instance in $@
 do 
 
     INSTANCE_ID=$(aws ec2 run-instances --image-id ami-0220d79f3f480ecf5 --instance-type t2.micro --security-group-ids sg-051bd3051b24472e6 --tag-specifications "ResourceType=instance,Tags=[{Key=Name, Value=$instance}]" --query "Instances[0].InstanceId" --output text)
