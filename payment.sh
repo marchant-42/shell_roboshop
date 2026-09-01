@@ -1,5 +1,5 @@
 #!/bin/bash
-
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -47,7 +47,7 @@ VALIDATE $? "downloading payment zip file"
 
 rm -rf /app/* 
 cd /app 
-unzip /tmp/payment.zip
+unzip /tmp/payment.zip &>>$LOGS_FILE
 VALIDATE $? "unzipping payment zip file" &>>$LOGS_FILE
 
 cd /app

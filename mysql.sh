@@ -1,5 +1,5 @@
 #!/bin/bash
-
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -19,7 +19,7 @@ else
     echo "you are running with root access" | tee -a $LOGS_FILE
 fi
 
-echo "please enter root password to setup"
+echo "please enter mysql password to setup"
 read -s MYSQL_ROOT_PASSWORD
 
 
@@ -43,7 +43,6 @@ VALIDATE $? "Starting MySQL"
 
 mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD
 VALIDATE $? "Setting MySQL root password"
-
 
 END_TIME=$(date +%s)
 TOTAL_TIME=$(($END_TIME-$START_TIME))

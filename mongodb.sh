@@ -1,6 +1,5 @@
 #!/bin/bash
 
-START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -46,4 +45,3 @@ VALIDATE $? "updating mongodb confi file for remote connections"
 systemctl restart mongod &>>$LOGS_FILE
 VALIDATE $? "restarting mongodb"
 
-print_time

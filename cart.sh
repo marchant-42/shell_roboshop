@@ -48,7 +48,7 @@ else
 fi
 
 
-mkdir /app &>>$LOGS_FILE
+mkdir -p /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
 
 curl -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip 
