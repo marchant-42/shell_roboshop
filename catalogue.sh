@@ -46,11 +46,10 @@ else
     echo -e "roboshop user is $Y already present nothing to do $N"
 fi
 
-
-mkdir -p /app &>>$LOGS_FILE
+mkdir /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
 VALIDATE $? "downloading catalogue zip file"
 
 rm -rf /app/* &>>$LOGS_FILE
@@ -81,5 +80,10 @@ then
 else
     echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
 fi
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$(($END_TIME-$START_TIME))
+
+echo -e "script execution completed successfully, $Y time taken: $TOTAL_TIME $N" | tee -a $LOGS_FILE
 #mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue(db name)")'
 #out put is 1 it means db is exists, other wise not
