@@ -1,5 +1,6 @@
 #!/bin/bash
 
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -8,9 +9,10 @@ N="\e[0m"
 LOGS_FOLDER="/var/log/roboshop-logs"
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOGS_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
-SCRIPT_DIR=$PWD # script directory where the script is running from
+
 mkdir -p $LOGS_FOLDER
 echo "script statrted excuted at : $(date)" | tee -a $LOGS_FILE
+
 if [ $USERID -ne 0 ]
 then
     echo -e "$R Error : only root user can run this script $N" | tee -a $LOGS_FILE
@@ -27,7 +29,6 @@ VALIDATE(){
         exit 1
     fi
 }
-
 dnf module disable nodejs -y &>>$LOGS_FILE
 VALIDATE $? "disabling nodejs module"
 
@@ -37,36 +38,36 @@ VALIDATE $? "enabling nodejs:20 module"
 dnf install nodejs -y &>>$LOGS_FILE
 VALIDATE $? "installing nodejs"
 
-id roboshop
-if [ $? -ne 0 ]
-then
-    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
-    VALIDATE $? "creating roboshop system user"
-else
-    echo -e "roboshop user is $Y already present nothing to do $N"
-fi
-
+id roboshop &>$LOGS_FILE
+    if [ $? -ne 0 ]
+    then
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
+        VALIDATE $? "creating roboshop system user"
+    else
+        echo -e "roboshop user is $Y already present nothing to do $N"
+    fi
+    
 mkdir -p /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
-VALIDATE $? "downloading catalogue zip file"
+curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
+VALIDATE $? "downloading $app_name zip file"
 
 rm -rf /app/* &>>$LOGS_FILE
 cd /app
-unzip /tmp/catalogue.zip &>>$LOGS_FILE
-VALIDATE $? "unzipping catalogue zip file"
- 
+unzip /tmp/$app_name.zip &>>$LOGS_FILE
+VALIDATE $? "unzipping $app_name zip file"
+
 npm install &>>$LOGS_FILE
 VALIDATE $? "installing nodejs dependencies"
 
-cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
-VALIDATE $? "copying catalogue service file"
+cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
+VALIDATE $? "copying $app_name service file"
 
 systemctl daemon-reload &>>$LOGS_FILE
-systemctl enable catalogue &>>$LOGS_FILE
-systemctl start catalogue
-VALIDATE $? "starting catalogue service"
+systemctl enable $app_name &>>$LOGS_FILE
+systemctl start $app_name
+VALIDATE $? "starting $app_name service"
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
@@ -80,6 +81,11 @@ then
 else
     echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
 fi
+
+END_TIME=$(date +%s)
+TOTAL_TIME=$(($END_TIME-$START_TIME))
+
+echo -e "script execution completed successfully, $Y time taken: $TOTAL_TIME $N" | tee -a $LOGS_FILE
 
 #mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue(db name)")'
 #out put is 1 it means db is exists, other wise not
