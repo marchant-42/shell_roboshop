@@ -73,7 +73,7 @@ dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "installing mongodb client"
 STATUS=$( mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
 )
-if [ $STATUS -lt 0]
+if [ $STATUS -lt 0 ]
 then
     mongosh --host mongodb.satishdevops.shop </app/db/master-data.js &>>$LOGS_FILE
     VALIDATE $? "loading data into Mongodb"
@@ -81,9 +81,5 @@ else
     echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
 fi
 
-END_TIME=$(date +%s)
-TOTAL_TIME=$(($END_TIME-$START_TIME))
-
-echo -e "script execution completed successfully, $Y time taken: $TOTAL_TIME $N" | tee -a $LOGS_FILE
 #mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue(db name)")'
 #out put is 1 it means db is exists, other wise not
