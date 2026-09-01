@@ -1,5 +1,6 @@
 #!/bin/bash
 
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -11,6 +12,8 @@ LOGS_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
 
 mkdir -p $LOGS_FOLDER
 echo "script statrted excuted at : $(date)" | tee -a $LOGS_FILE
+
+
 if [ $USERID -ne 0 ]
 then
     echo -e "$R Error : only root user can run this script $N" | tee -a $LOGS_FILE
@@ -27,7 +30,6 @@ VALIDATE(){
         exit 1
     fi
 }
-
 cp mongo.repo /etc/yum.repos.d/mongo.repo
 VALIDATE $? "copying mongo.repo"
 
@@ -44,3 +46,4 @@ VALIDATE $? "updating mongodb confi file for remote connections"
 systemctl restart mongod &>>$LOGS_FILE
 VALIDATE $? "restarting mongodb"
 
+print_time
