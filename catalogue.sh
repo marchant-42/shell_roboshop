@@ -50,29 +50,30 @@ id roboshop &>$LOGS_FILE
 mkdir -p /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
 
-curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOGS_FILE
-VALIDATE $? "downloading $app_name zip file"
+curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
+VALIDATE $? "downloading catalogue zip file"
 
-rm -rf /app/* &>>$LOGS_FILE
+rm -rf /app/*  &>>$LOGS_FILE
 cd /app
-unzip /tmp/$app_name.zip &>>$LOGS_FILE
-VALIDATE $? "unzipping $app_name zip file"
+unzip /tmp/catalogue.zip &>>$LOGS_FILE
+VALIDATE $? "unzipping catalogue zip file"
 
 npm install &>>$LOGS_FILE
 VALIDATE $? "installing nodejs dependencies"
 
-cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
-VALIDATE $? "copying $app_name service file"
+cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
+VALIDATE $? "copying catalogue service file"
 
 systemctl daemon-reload &>>$LOGS_FILE
-systemctl enable $app_name &>>$LOGS_FILE
-systemctl start $app_name
-VALIDATE $? "starting $app_name service"
+systemctl enable catalogue &>>$LOGS_FILE
+systemctl start catalogue
+VALIDATE $? "starting catalogue service"
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
 dnf install mongodb-mongosh -y &>>$LOGS_FILE
 VALIDATE $? "installing mongodb client"
-STATUS=$( mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+
+STATUS=$(mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
 )
 if [ $STATUS -lt 0 ]
 then
@@ -82,7 +83,7 @@ else
     echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
 fi
 
-END_TIME=$(date +%s)
+END_TIME=$(date +%s)f
 TOTAL_TIME=$(($END_TIME-$START_TIME))
 
 echo -e "script execution completed successfully, $Y time taken: $TOTAL_TIME $N" | tee -a $LOGS_FILE
