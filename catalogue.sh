@@ -46,7 +46,7 @@ else
     echo -e "roboshop user is $Y already present nothing to do $N"
 fi
 
-mkdir /app &>>$LOGS_FILE
+mkdir -p /app &>>$LOGS_FILE
 VALIDATE $? "creating app directory"
 
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
