@@ -1,6 +1,5 @@
 #!/bin/bash
 
-START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -83,11 +82,6 @@ then
 else
     echo -e "Data is alredy loaded ...$Y SKIPPING $N" 
 fi
-
-END_TIME=$(date +%s)f
-TOTAL_TIME=$(($END_TIME-$START_TIME))
-
-echo -e "script execution completed successfully, $Y time taken: $TOTAL_TIME $N" | tee -a $LOGS_FILE
 
 #mongosh --host mongodb.satishdevops.shop --eval 'db.getMongo().getDBNames().indexOf("catalogue(db name)")'
 #out put is 1 it means db is exists, other wise not
